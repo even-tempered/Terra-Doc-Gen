@@ -2,17 +2,15 @@ name: Generate Terraform Docs
 
 on:
   pull_request:
-    branches:
-      - main
     paths:
-      - '**/*.tf'
-      - '**/*.tfvars'
+      - '**.tf'
+      - '**.tfvars'
   push:
     branches:
       - '**'
     paths:
-      - '**/*.tf'
-      - '**/*.tfvars'
+      - '**.tf'
+      - '**.tfvars'
 
 jobs:
   generate-docs:
@@ -31,7 +29,7 @@ jobs:
           GRAPH_DIR=".tfdoc-assets"
           GRAPH="$GRAPH_DIR/terraform-dependency-graph.png"
 
-          rm -f $README $GRAPH
+          rm -f $README $GRAPH 
           mkdir -p $GRAPH_DIR
 
           echo "## Terraform Dependency Graph" >> $README
@@ -41,13 +39,15 @@ jobs:
           echo -e "\n## Terraform Documentation" >> $README
           terraform-docs markdown table . >> $README
 
-          cat $README
+          cat README.md
 
       - name: Commit generated docs (only on push)
         if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add README.md
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: Terraform Docs"
-          git push
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: Terraform Docs" --no-verify
+          git push --set-upstream "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" HEAD
