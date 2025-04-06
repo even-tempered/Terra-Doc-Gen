@@ -33,7 +33,7 @@ jobs:
 
           rm -f $README $GRAPH
           mkdir -p $GRAPH_DIR
-          echo "${GITHUB_REPOSITORY}"
+          
           echo "## Terraform Dependency Graph" >> $README
           terraform graph | dot -Tpng -o $GRAPH
           echo "![Terraform Graph]($GRAPH)" >> $README
@@ -52,4 +52,5 @@ jobs:
           git config user.email "github-actions@github.com"
           git add README.md
           git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: Terraform Docs" --no-verify
-          git push --set-upstream "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" HEAD
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git push origin HEAD
