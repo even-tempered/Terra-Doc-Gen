@@ -7,7 +7,7 @@ on:
       - '**.tfvars'
   push:
     branches:
-      - main
+      - '**'
     paths:
       - '**.tf'
       - '**.tfvars'
@@ -20,6 +20,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Initialize Terraform
+        run: terraform init 
+        
       - name: Generate Terraform docs
         run: |
           #terraform-docs markdown table . > README.md
