@@ -1,3 +1,4 @@
+#---#
 resource "aws_s3_bucket" "this" {
   bucket        = var.generate_name ? lower("ilx-${random_string.this[0].id}-${var.bucket_name}") : lower(var.bucket_name)
   tags          = var.tags
