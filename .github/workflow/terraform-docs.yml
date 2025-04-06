@@ -1,1 +1,35 @@
-###upload
+name: Generate Terraform Docs
+
+on:
+  pull_request:
+    paths:
+      - '**.tf'
+      - '**.tfvars'
+  push:
+    branches:
+      - main
+    paths:
+      - '**.tf'
+      - '**.tfvars'
+
+jobs:
+  generate-docs:
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate Terraform docs
+        run: |
+          terraform-docs markdown table . > README.md
+          cat README.md
+
+      - name: Commit generated docs (only on merge)
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: Terraform Docs"
+          git push
