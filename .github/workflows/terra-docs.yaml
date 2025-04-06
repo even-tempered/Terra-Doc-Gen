@@ -17,8 +17,6 @@ on:
 jobs:
   generate-docs:
     runs-on: self-hosted
-    permissions:
-         contents: write
 
     steps:
       - name: Checkout code
