@@ -34,11 +34,11 @@ jobs:
           rm -f $README $GRAPH 
           mkdir -p $GRAPH_DIR
 
-          echo -e "## Terraform Dependency Graph" >> $README
+          echo  "## Terraform Dependency Graph" >> $README
           terraform graph | dot -Tpng -o $GRAPH
           echo "![Terraform Graph]($GRAPH)" >> $README
           
-          echo "\n## Terraform Documentation" >> $README
+          echo -e "\n## Terraform Documentation" >> $README
           terraform-docs markdown table . >> $README
 
           cat README.md
