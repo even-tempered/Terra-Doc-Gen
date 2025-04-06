@@ -44,7 +44,7 @@ jobs:
           cat $README
 
       - name: Commit generated docs (only on push)
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
