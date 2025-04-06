@@ -17,12 +17,13 @@ on:
 jobs:
   generate-docs:
     runs-on: self-hosted
-
+    permissions:
+       contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with: 
-          token: $ {{ secrets.GH_TOKEN }}
+       # with: 
+        #  token: $ {{ secrets.GH_TOKEN }}
           
       - name: Triggering Actor
         run: |
@@ -58,7 +59,6 @@ jobs:
           
           if ! sudo git diff --quiet --staged: then 
             sudo git commit -m "Auto-update: Terraform Docs" 
-            sudo git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
             sudo git push " https://${{ secrets.GH_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
           else 
              echo "no change to commit."
