@@ -2,15 +2,17 @@ name: Generate Terraform Docs
 
 on:
   pull_request:
+    branches:
+      - main
     paths:
-      - '**.tf'
-      - '**.tfvars'
+      - '**/*.tf'
+      - '**/*.tfvars'
   push:
     branches:
       - '**'
     paths:
-      - '**.tf'
-      - '**.tfvars'
+      - '**/*.tf'
+      - '**/*.tfvars'
 
 jobs:
   generate-docs:
@@ -29,7 +31,7 @@ jobs:
           GRAPH_DIR=".tfdoc-assets"
           GRAPH="$GRAPH_DIR/terraform-dependency-graph.png"
 
-          rm -f $README $GRAPH 
+          rm -f $README $GRAPH
           mkdir -p $GRAPH_DIR
 
           echo "## Terraform Dependency Graph" >> $README
@@ -39,7 +41,7 @@ jobs:
           echo -e "\n## Terraform Documentation" >> $README
           terraform-docs markdown table . >> $README
 
-          cat README.md
+          cat $README
 
       - name: Commit generated docs (only on push)
         if: github.event_name == 'push'
