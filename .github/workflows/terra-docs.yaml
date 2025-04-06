@@ -22,7 +22,22 @@ jobs:
 
       - name: Generate Terraform docs
         run: |
-          terraform-docs markdown table . > README.md
+          #terraform-docs markdown table . > README.md
+          #cat README.md
+          README="README.md"
+          GRAPH_DIR=".tfdoc-assets"
+          GRAPH="$GRAPH_DIR/terraform-dependancy-graph.png"
+
+          rm -f $README $GRAPH 
+          mkdir -p $GRAPH_DIR
+
+          echo -e "## Terraform Dependency Graph" >> $README
+          terraform graph | dot -Tpng -o $GRAPH
+          echo "![Terraform Graph]($GRAPH)" >> $README
+          
+          echo "\n## Terraform Documentation" >> $README
+          terraform-docs markdown table . >> $README
+
           cat README.md
 
       - name: Commit generated docs (only on merge)
