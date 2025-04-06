@@ -33,7 +33,7 @@ jobs:
 
           rm -f $README $GRAPH
           mkdir -p $GRAPH_DIR
-
+          echo "${GITHUB_REPOSITORY}"
           echo "## Terraform Dependency Graph" >> $README
           terraform graph | dot -Tpng -o $GRAPH
           echo "![Terraform Graph]($GRAPH)" >> $README
