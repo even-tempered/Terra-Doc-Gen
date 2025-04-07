@@ -28,20 +28,22 @@ jobs:
 
       - name: Generate Terraform docs and graph
         run: |
-          README="README.md"
-          GRAPH_DIR=".tfdoc-assets"
-          GRAPH="$GRAPH_DIR/terraform-dependency-graph.png"
-
-          rm -f $README $GRAPH
-          mkdir -p $GRAPH_DIR
-          echo "## Terraform Dependency Graph" >> $README
-          terraform graph | dot -Tpng -o $GRAPH
-          echo "![Terraform Graph]($GRAPH)" >> $README
-          
-          echo -e "\n## Terraform Documentation" >> $README
-          terraform-docs markdown table . >> $README
-
-          cat $README
+           README="README.md"
+           GRAPH_DIR=".tfdoc-assets"
+           GRAPH="$GRAPH_DIR/terraform-dependency-graph.png"
+ 
+           rm -f $README $GRAPH
+           mkdir -p $GRAPH_DIR
+ 
+           
+           echo "## Terraform Dependency Graph" >> $README
+           terraform graph | dot -Tpng -o $GRAPH
+           echo "![Terraform Graph]($GRAPH)" >> $README
+           
+           echo -e "\n## Terraform Documentation" >> $README
+           terraform-docs markdown table . >> $README
+ 
+           cat $README
 
       - name: Commit generated docs (only on push)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
