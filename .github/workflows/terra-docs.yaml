@@ -14,6 +14,7 @@ on:
       - '**/*.tf'
       - '**/*.tfvars'
       - '**/*.yaml'
+
 jobs:
   generate-docs:
     runs-on: self-hosted
@@ -41,12 +42,26 @@ jobs:
           terraform-docs markdown table . >> $README
 
           cat $README
- 
-      - name: Commit generated docs (only on merge)
-        if: github.event_name == 'push'
+
+      - name: Commit generated docs (only on push)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          #git config user.name "github-actions"
+          #git config user.email "github-actions@github.com"
+          git config --global user.name "even-tempered"
+          git config --global user.email "even-tempered@github.com"
           git add README.md
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: Terraform Docs"
-          git push
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: Terraform Docs" --no-verify
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git push origin HEAD
+ 
+      # - name: Commit generated docs (only on merge)
+      #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      #   run: |
+      #     git config user.name "github-actions"
+      #     git config user.email "github-actions@github.com"
+      #     git add README.md
+      #     git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: Terraform Docs"
+      #     git push
