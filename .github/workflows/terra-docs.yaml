@@ -20,34 +20,39 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      # Step 1: Checkout Code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Initialize Terraform
       - name: Initialize Terraform
         run: terraform init
 
+      # Step 3: Generate Terraform Documentation and Graph
       - name: Generate Terraform docs and graph
         run: |
+          # Define file locations
           README="README.md"
           GRAPH_DIR=".tfdoc-assets"
           GRAPH="$GRAPH_DIR/terraform-dependency-graph.png"
-          
-          # Clear existing files
+
+          # Clear existing files and directories
           rm -f $README $GRAPH
           mkdir -p $GRAPH_DIR
-          
-          # Generate dependency graph
+
+          # Generate Dependency Graph
           echo "## Terraform Dependency Graph" >> $README
           terraform graph | dot -Tpng -o $GRAPH || { echo "Failed to generate graph"; exit 1; }
           echo "![Terraform Graph]($GRAPH)" >> $README
-          
-          # Append Terraform documentation
+
+          # Generate Terraform Documentation
           echo -e "\n## Terraform Documentation" >> $README
-          terraform-docs markdown table . >> $README || { echo "Failed to generate docs"; exit 1; }
-          
-          # Output README for verification
+          terraform-docs markdown table . >> $README || { echo "Failed to generate Terraform docs"; exit 1; }
+
+          # Output README for debugging
           cat $README || { echo "Failed to display README"; exit 1; }
 
+      # Step 4: Commit and Push Generated Docs (On Push Only)
       - name: Commit generated docs (only on push)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
