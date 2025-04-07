@@ -48,11 +48,22 @@ jobs:
           # Generate Terraform Documentation
           echo -e "\n## Terraform Documentation" >> $README
           terraform-docs markdown table . >> $README || { echo "Failed to generate Terraform docs"; exit 1; }
+      
+      # Step 4:  Output Readme
 
-          # Output README for debugging
-          cat $README || { echo "Failed to display README"; exit 1; }
-
-      # Step 4: Commit and Push Generated Docs (On Push Only)
+      - name: Output README
+        run: |
+          echo -e "\033[1;34m---------------- README.md ----------------- \033[0m"
+          if [ -f README.md ] ; then
+            while IFS= read -r line; do
+               echo "$line"
+            done  < README.md
+          else
+            echo "README.md not found"
+            exit 1
+          fi
+          
+      # Step 5: Commit and Push Generated Docs (On Push Only)
       - name: Commit generated docs (only on push)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
