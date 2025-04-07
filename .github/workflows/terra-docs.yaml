@@ -20,6 +20,33 @@ jobs:
     runs-on: self-hosted
 
     steps:
+
+      - name: Install Dependencies
+        run: |
+          # Update package lists
+          sudo apt-get update
+
+          # Install Terraform
+          sudo apt-get install -y wget unzip
+          wget https://releases.hashicorp.com/terraform/1.5.4/terraform_1.5.4_linux_amd64.zip
+          unzip terraform_1.5.4_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
+          terraform --version
+
+          # Install Graphviz
+          sudo apt-get install -y graphviz
+          dot -V # Verify Graphviz installation
+
+          # Install Terraform Docs
+          curl -s https://raw.githubusercontent.com/terraform-docs/terraform-docs/main/install.sh | bash
+          terraform-docs --version # Verify Terraform Docs installation
+
+          # Install Python3 and Pip (for Rover)
+          sudo apt-get install -y python3 python3-pip
+
+          # Install Rover
+          pip3 install rover
+          rover --version # Verify Rover installation
       # Step 1: Checkout Code
       - name: Checkout code
         uses: actions/checkout@v4
