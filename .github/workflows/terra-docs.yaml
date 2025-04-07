@@ -11,9 +11,9 @@ on:
     branches:
       - '**'
     paths:
-      #- '**/*.tf'
+      - '**/*.tf'
       - '**/*.tfvars'
-      #- '**/*.yaml'
+      - '**/*.yaml'
 
 jobs:
   generate-docs:
