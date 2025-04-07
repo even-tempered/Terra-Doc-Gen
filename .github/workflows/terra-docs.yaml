@@ -45,9 +45,9 @@ jobs:
           terraform graph | dot -Tpng -o $GRAPH || { echo "Failed to generate graph"; exit 1; }
           echo "![Terraform Graph]($GRAPH)" >> $README
 
-          # Generate Terraform Documentation
-          echo -e "\n## Terraform Documentation" >> $README
-          terraform-docs markdown table . >> $README || { echo "Failed to generate Terraform docs"; exit 1; }
+          # # Generate Terraform Documentation
+          # echo -e "\n## Terraform Documentation" >> $README
+          # terraform-docs markdown table . >> $README || { echo "Failed to generate Terraform docs"; exit 1; }
 
           # Output README for debugging
           cat $README || { echo "Failed to display README"; exit 1; }
