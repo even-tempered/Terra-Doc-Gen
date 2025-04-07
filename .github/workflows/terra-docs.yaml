@@ -34,12 +34,12 @@ jobs:
           if ! command -v terraform &> /dev/null; then
             echo -e "${RED}Terraform not found, installing...${NC}"
             sudo apt-get install -y wget unzip
-            wget https://releases.hashicorp.com/terraform/1.11.1/terraform_1.11.1_linux_amd64.zip
-            unzip terraform_1.5.4_linux_amd64.zip
+            wget https://releases.hashicorp.com/terraform/1.11.3/terraform_1.11.3_linux_amd64.zip
+            unzip terraform_1.11.3_linux_amd64.zip
             sudo mv terraform /usr/local/bin/
           else
             echo -e "${GREEN}Terraform is already installed. Current version:${NC}"
-            terraform --version
+            echo -e "${GREEN}terraform --version{NC}"
           fi
 
           # Check and Install Graphviz
@@ -48,7 +48,7 @@ jobs:
             sudo apt-get install -y graphviz
           else
             echo -e "${GREEN}Graphviz is already installed. Current version:${NC}"
-            dot -V
+            echo -e "${GREEN}dot -V{NC}"
           fi
 
           # Check and Install Terraform Docs
@@ -60,26 +60,10 @@ jobs:
             sudo mv terraform-docs /usr/local/bin
           else
             echo -e "${GREEN}Terraform Docs is already installed. Current version:${NC}"
-            terraform-docs --version
+            echo -e "{GREEN}terraform-docs --version{NC}"
           fi
 
-          # Check and Install Python3 and Pip (for Rover)
-          if ! command -v python3 &> /dev/null; then
-            echo -e "${RED}Python3 not found, installing...${NC}"
-            sudo apt-get install -y python3 python3-pip
-          else
-            echo -e "${GREEN}Python3 is already installed. Current version:${NC}"
-            python3 --version
-          fi
-
-          # Check and Install Rover
-          if ! pip3 show rover > /dev/null 2>&1; then
-            echo -e "${RED}Rover not found, installing...${NC}"
-            pip3 install rover
-          else
-            echo -e "${GREEN}Rover is already installed. Current version:${NC}"
-            rover --version
-          fi
+      
       # Step 1: Checkout Code
       - name: Checkout code
         uses: actions/checkout@v4
