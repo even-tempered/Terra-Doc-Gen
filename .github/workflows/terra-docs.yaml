@@ -1,35 +1,66 @@
 name: Generate Terraform Docs
- 
+
 on:
   pull_request:
+    branches:
+      - main
     paths:
-      - '**.tf'
-      - '**.tfvars'
+      - '**/*.tf'
+      - '**/*.tfvars'
   push:
     branches:
       - '**'
     paths:
-      - '**.tf'
-      - '**.tfvars'
- 
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '**/*.yaml'
+
 jobs:
   generate-docs:
-    runs-on: [self-hosted]
- 
+    runs-on: self-hosted
+
     steps:
+      # Step 1: Checkout Code
       - name: Checkout code
         uses: actions/checkout@v4
- 
-      - name: Generate Terraform docs
+
+      # Step 2: Initialize Terraform
+      - name: Initialize Terraform
+        run: terraform init
+
+      # Step 3: Generate Terraform Documentation and Graph
+      - name: Generate Terraform docs and graph
         run: |
-          terraform-docs markdown table . > README.md
-          cat README.md
- 
-      - name: Commit generated docs (only on merge)
-        if: github.event_name == 'push'
+          # Define file locations
+          README="README.md"
+          GRAPH_DIR=".tfdoc-assets"
+          GRAPH="$GRAPH_DIR/terraform-dependency-graph.png"
+
+          # Clear existing files and directories
+          rm -f $README $GRAPH
+          mkdir -p $GRAPH_DIR
+
+          # Generate Dependency Graph
+          echo "## Terraform Dependency Graph" >> $README
+          terraform graph | dot -Tpng -o $GRAPH || { echo "Failed to generate graph"; exit 1; }
+          echo "![Terraform Graph]($GRAPH)" >> $README
+
+          # # Generate Terraform Documentation
+          # echo -e "\n## Terraform Documentation" >> $README
+          # terraform-docs markdown table . >> $README || { echo "Failed to generate Terraform docs"; exit 1; }
+
+          # Output README for debugging
+          cat $README || { echo "Failed to display README"; exit 1; }
+
+      # Step 4: Commit and Push Generated Docs (On Push Only)
+      - name: Commit generated docs (only on push)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
           git add README.md
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: Terraform Docs"
-          git push
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: Terraform Docs" --no-verify
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git push origin HEAD
