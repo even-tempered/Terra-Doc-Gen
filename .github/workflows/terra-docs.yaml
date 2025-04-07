@@ -20,6 +20,51 @@ jobs:
     runs-on: self-hosted
 
     steps:
+
+      - name: Install Dependencies
+        run: |
+          # Install Dependencies
+          RED="\033[0;31m"
+          GREEN="\033[0;32m"
+          NC="\033[0m"
+          
+          # Update package lists
+          sudo apt-get update
+
+          # Check and Install Terraform
+          if ! command -v terraform &> /dev/null; then
+            echo -e "${RED}Terraform not found, installing...${NC}"
+            sudo apt-get install -y wget unzip
+            wget https://releases.hashicorp.com/terraform/1.11.3/terraform_1.11.3_linux_amd64.zip
+            unzip terraform_1.11.3_linux_amd64.zip
+            sudo mv terraform /usr/local/bin/
+          else
+            echo -e "${GREEN}Terraform is already installed. Current version:${NC}"
+            terraform --version
+          fi
+
+          # Check and Install Graphviz
+          if ! command -v dot &> /dev/null; then
+            echo -e "${RED}Graphviz not found, installing...${NC}"
+            sudo apt-get install -y graphviz
+          else
+            echo -e "${GREEN}Graphviz is already installed. Current version:${NC}"
+            dot -V
+          fi
+
+          # Check and Install Terraform Docs
+          if ! command -v terraform-docs &> /dev/null; then
+            echo -e "${RED}Terraform Docs not found, installing...${NC}"
+            wget https://github.com/terraform-docs/terraform-docs/releases/download/v0.20.0/terraform-docs-v0.20.0-linux-amd64.tar.gz
+            tar -xzf terraform-docs-v0.20.0-linux-amd64.tar.gz
+            chmod +x terraform-docs
+            sudo mv terraform-docs /usr/local/bin
+          else
+            echo -e "${GREEN}Terraform Docs is already installed. Current version:${NC}"
+            terraform-docs --version
+          fi
+
+      
       # Step 1: Checkout Code
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,14 +90,25 @@ jobs:
           terraform graph | dot -Tpng -o $GRAPH || { echo "Failed to generate graph"; exit 1; }
           echo "![Terraform Graph]($GRAPH)" >> $README
 
-          # # Generate Terraform Documentation
-          # echo -e "\n## Terraform Documentation" >> $README
-          # terraform-docs markdown table . >> $README || { echo "Failed to generate Terraform docs"; exit 1; }
+          # Generate Terraform Documentation
+          echo -e "\n## Terraform Documentation" >> $README
+          terraform-docs markdown table . >> $README || { echo "Failed to generate Terraform docs"; exit 1; }
+      
+      # Step 4:  Output Readme
 
-          # Output README for debugging
-          cat $README || { echo "Failed to display README"; exit 1; }
-
-      # Step 4: Commit and Push Generated Docs (On Push Only)
+      - name: Output README
+        run: |
+          echo -e "\033[1;34m---------------- README.md ----------------- \033[0m"
+          if [ -f README.md ] ; then
+            while IFS= read -r line; do
+               echo "$line"
+            done  < README.md
+          else
+            echo "README.md not found"
+            exit 1
+          fi
+          
+      # Step 5: Commit and Push Generated Docs (On Push Only)
       - name: Commit generated docs (only on push)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
