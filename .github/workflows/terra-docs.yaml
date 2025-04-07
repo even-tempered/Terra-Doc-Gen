@@ -23,61 +23,61 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          RED='\033[0;31m'
-          GREEN='\033[0;32m'
-          NC='\033[0m'
+          RED="\033[0;31m"
+          GREEN="\033[0;32m"
+          NC="\033[0m"
           
           # Update package lists
           sudo apt-get update
 
           # Check and Install Terraform
           if ! command -v terraform &> /dev/null; then
-            #echo "${RED}Terraform not found, installing...${NC}"
+            echo "${RED}Terraform not found, installing...${NC}"
             sudo apt-get install -y wget unzip
             wget https://releases.hashicorp.com/terraform/1.11.1/terraform_1.11.1_linux_amd64.zip
             unzip terraform_1.5.4_linux_amd64.zip
             sudo mv terraform /usr/local/bin/
           else
-            #echo "${GREEN}Terraform is already installed. Current version:${NC}"
+            echo "${GREEN}Terraform is already installed. Current version:${NC}"
             terraform --version
           fi
 
           # Check and Install Graphviz
           if ! command -v dot &> /dev/null; then
-            #echo "${RED}Graphviz not found, installing...${NC}"
+            echo "${RED}Graphviz not found, installing...${NC}"
             sudo apt-get install -y graphviz
           else
-            #echo "${GREEN}Graphviz is already installed. Current version:${NC}"
+            echo "${GREEN}Graphviz is already installed. Current version:${NC}"
             dot -V
           fi
 
           # Check and Install Terraform Docs
           if ! command -v terraform-docs &> /dev/null; then
-            #echo "${RED}Terraform Docs not found, installing...${NC}"
-            curl  https://github.com/terraform-docs/terraform-docs/releases/download/v0.20.0/terraform-docs-v0.20.0-linux-arm64.tar.gz
-            tar -xzf terraform-docs-v0.20.0-linux-arm64.tar.gz
+            echo "${RED}Terraform Docs not found, installing...${NC}"
+            wget https://github.com/terraform-docs/terraform-docs/releases/download/v0.20.0/terraform-docs-v0.20.0-linux-amd64.tar.gz
+            tar -xzf terraform-docs-v0.20.0-linux-amd64.tar.gz
             chmod +x terraform-docs
             mv terraform-docs /home/terraform-docs
           else
-            #echo "${GREEN}Terraform Docs is already installed. Current version:${NC}"
+            echo "${GREEN}Terraform Docs is already installed. Current version:${NC}"
             terraform-docs --version
           fi
 
           # Check and Install Python3 and Pip (for Rover)
           if ! command -v python3 &> /dev/null; then
-            #echo "${RED}Python3 not found, installing...${NC}"
+            echo "${RED}Python3 not found, installing...${NC}"
             sudo apt-get install -y python3 python3-pip
           else
-            #echo "${GREEN}Python3 is already installed. Current version:${NC}"
+            echo "${GREEN}Python3 is already installed. Current version:${NC}"
             python3 --version
           fi
 
           # Check and Install Rover
           if ! pip3 show rover > /dev/null 2>&1; then
-            #echo "${RED}Rover not found, installing...${NC}"
+            echo "${RED}Rover not found, installing...${NC}"
             pip3 install rover
           else
-            #echo "${GREEN}Rover is already installed. Current version:${NC}"
+            echo "${GREEN}Rover is already installed. Current version:${NC}"
             rover --version
           fi
       # Step 1: Checkout Code
