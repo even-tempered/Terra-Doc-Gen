@@ -63,4 +63,5 @@ jobs:
           git add README.md
           git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update: Terraform Docs" --no-verify
           git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          git push origin HEAD
+          git ls-remote origin || { echo "Failed to authenticate with token"; exit 1; }
+          git push origin HEAD || { echo "Failed to push changes"; exit 1; }
